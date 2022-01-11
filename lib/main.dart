@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:financas_pessoais/components/transaction_components/transaction_form/transaction_form.dart';
 import 'package:financas_pessoais/components/transaction_components/transaction_list/transaction_list.dart';
 import 'package:financas_pessoais/components/transaction_components/transaction_user/transaction_user.dart';
@@ -18,7 +20,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.purple,
+        accentColor: Colors.amber,
+        fontFamily: 'Quicksand',
+        appBarTheme: AppBarTheme(
+            textTheme: ThemeData.light().textTheme.copyWith(
+                headline6: const TextStyle(
+                    fontFamily: 'OpenSans',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold))),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -38,13 +48,49 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _transactions = [
+    Transaction(
+        id: "t1",
+        title: "Tenis de Corrida Novo",
+        value: 310.76,
+        date: DateTime.now())
+  ];
+
+  _addTransaction(String title, double value) {
+    final newTransaction = Transaction(
+        id: Random().nextDouble().toString(),
+        title: title,
+        value: value,
+        date: DateTime.now());
+
+    setState(() {
+      _transactions.add(newTransaction);
+    });
+
+    Navigator.of(context).pop;
+  }
+
+  _openTransactionFormModal(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return TransactionForm(_addTransaction);
+        });
+    // Navigator.of(context).pop;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Despesas Pessoais"),
+        title: const Text(
+          "Despesas Pessoais",
+          style: TextStyle(fontFamily: 'OpenSans'),
+        ),
         actions: [
-          IconButton(onPressed: (){}, icon: const Icon(Icons.add)),
+          IconButton(
+              onPressed: () => _openTransactionFormModal(context),
+              icon: const Icon(Icons.add)),
         ],
       ),
       body: SingleChildScrollView(
@@ -59,11 +105,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text("Graficos"),
               ),
             ),
-            TransactionUser(),
+            TransactionList(transactions: _transactions),
+            // TransactionForm(_addTransaction),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: (){}, child: Icon(Icons.add),),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _openTransactionFormModal(context),
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

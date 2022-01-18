@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:financas_pessoais/components/chart_widget/chart.dart';
 import 'package:financas_pessoais/components/transaction_components/transaction_form/transaction_form.dart';
 import 'package:financas_pessoais/components/transaction_components/transaction_list/transaction_list.dart';
 import 'package:financas_pessoais/components/transaction_components/transaction_user/transaction_user.dart';
@@ -49,12 +50,28 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transactions = [
-    // Transaction(
-    //     id: "t1",
-    //     title: "Tenis de Corrida Novo",
-    //     value: 310.76,
-    //     date: DateTime.now())
+    Transaction(
+        id: "t0",
+        title: "Conta Antiga",
+        value: 400.00,
+        date: DateTime.now().subtract(Duration(days: 33))),
+        Transaction(
+        id: "t2",
+        title: "Novo Tênis de Corrida",
+        value: 310.76,
+         date: DateTime.now().subtract(Duration(days: 2))),
+        Transaction(
+        id: "t3",
+        title: "Conta de Luz",
+        value: 211.30,
+         date: DateTime.now().subtract(Duration(days: 1))),
   ];
+
+  List<Transaction> get _recentTransaction{
+    return _transactions.where((tr){
+      return tr.date.isAfter(DateTime.now().subtract(Duration(days:7)));
+    }).toList();
+  }
 
   _addTransaction(String title, double value) {
     final newTransaction = Transaction(
@@ -98,13 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           // ignore: prefer_const_literals_to_create_immutables
           children: [
-            Container(
-              color: Colors.blue,
-              child: const Card(
-                color: Colors.blue,
-                child: Text("Graficos"),
-              ),
-            ),
+            Chart(_recentTransaction),
             TransactionList(transactions: _transactions),
             // TransactionForm(_addTransaction),
           ],

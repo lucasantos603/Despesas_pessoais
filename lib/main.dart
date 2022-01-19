@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:financas_pessoais/components/chart_widget/chart.dart';
 import 'package:financas_pessoais/components/transaction_components/transaction_form/transaction_form.dart';
 import 'package:financas_pessoais/components/transaction_components/transaction_list/transaction_list.dart';
-import 'package:financas_pessoais/components/transaction_components/transaction_user/transaction_user.dart';
+// import 'package:financas_pessoais/components/transaction_components/transaction_user/transaction_user.dart';
 import 'package:flutter/material.dart';
 
 import 'package:financas_pessoais/models/transaction/transaction.dart';
@@ -49,42 +49,34 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _transactions = [
-    Transaction(
-        id: "t0",
-        title: "Conta Antiga",
-        value: 400.00,
-        date: DateTime.now().subtract(Duration(days: 33))),
-        Transaction(
-        id: "t2",
-        title: "Novo Tênis de Corrida",
-        value: 310.76,
-         date: DateTime.now().subtract(Duration(days: 2))),
-        Transaction(
-        id: "t3",
-        title: "Conta de Luz",
-        value: 211.30,
-         date: DateTime.now().subtract(Duration(days: 1))),
-  ];
+  final List<Transaction> _transactions = [];
 
-  List<Transaction> get _recentTransaction{
-    return _transactions.where((tr){
-      return tr.date.isAfter(DateTime.now().subtract(Duration(days:7)));
+  List<Transaction> get _recentTransaction {
+    return _transactions.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
     }).toList();
   }
 
-  _addTransaction(String title, double value) {
+  _addTransaction(String title, double value, DateTime date) {
     final newTransaction = Transaction(
         id: Random().nextDouble().toString(),
         title: title,
         value: value,
-        date: DateTime.now());
+        date: date);
 
     setState(() {
       _transactions.add(newTransaction);
     });
 
     Navigator.of(context).pop;
+  }
+
+  _deleteTransaction(String id) {
+    setState(() {
+      _transactions.removeWhere((tr) {
+        return tr.id == id;
+      });
+    });
   }
 
   _openTransactionFormModal(BuildContext context) {
@@ -116,14 +108,16 @@ class _MyHomePageState extends State<MyHomePage> {
           // ignore: prefer_const_literals_to_create_immutables
           children: [
             Chart(_recentTransaction),
-            TransactionList(transactions: _transactions),
+            TransactionList(transactions: _transactions, onRemove: _deleteTransaction,),
             // TransactionForm(_addTransaction),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.purple,
+        // focusColor: Colors.purple,
         onPressed: () => _openTransactionFormModal(context),
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
